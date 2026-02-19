@@ -11,7 +11,7 @@
 | **Neon PostgreSQL** | Procurement database | [console.neon.tech](https://console.neon.tech) |
 | **riigihanked.riik.ee** | Public procurement data source | [riigihanked.riik.ee](https://riigihanked.riik.ee) |
 | **GitHub Actions** | Daily automated scraping cron | [Actions tab](https://github.com/keeltekool/hanke-radar/actions) |
-| **Render** | REST API hosting (free tier) | TBD — deploy pending |
+| **Render** | REST API hosting (free tier) | [dashboard.render.com](https://dashboard.render.com) |
 
 ---
 
@@ -19,9 +19,9 @@
 
 | Environment | URL |
 |------------|-----|
-| API (production) | TBD (Render) |
+| API (production) | https://hanke-radar.onrender.com |
+| Swagger docs | https://hanke-radar.onrender.com/docs |
 | API (local) | http://localhost:8000 |
-| Swagger docs (local) | http://localhost:8000/docs |
 | GitHub | https://github.com/keeltekool/hanke-radar |
 
 ---

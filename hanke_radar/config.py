@@ -17,8 +17,9 @@ class Settings(BaseSettings):
     api_port: int = 8000
     port: int = 0  # Render sets PORT env var — overrides api_port if set
     cors_origins: list[str] = [
-        "http://localhost:3003",       # QuoteKit local
-        "https://quote-kit.vercel.app",  # QuoteKit production
+        "http://localhost:3003",          # QuoteKit local
+        "https://quote-kit.vercel.app",   # QuoteKit production
+        "https://hanke-radar.onrender.com",  # Self (Swagger UI)
     ]
 
     @property
