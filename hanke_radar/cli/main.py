@@ -31,14 +31,19 @@ def scrape(
 
     console.print(f"[bold]Scraping {len(months_to_scrape)} month(s)...[/bold]")
 
-    results = []
-    for y, m in months_to_scrape:
-        console.print(f"\n[cyan]--- {y}-{m:02d} ---[/cyan]")
-        try:
-            summary = asyncio.run(scrape_month(y, m))
-            results.append(summary)
-        except Exception as e:
-            console.print(f"[red]Failed: {e}[/red]")
+    async def _scrape_all():
+        """Run all months in a single event loop to avoid session/engine issues."""
+        _results = []
+        for _y, _m in months_to_scrape:
+            console.print(f"\n[cyan]--- {_y}-{_m:02d} ---[/cyan]")
+            try:
+                summary = await scrape_month(_y, _m)
+                _results.append(summary)
+            except Exception as e:
+                console.print(f"[red]Failed: {e}[/red]")
+        return _results
+
+    results = asyncio.run(_scrape_all())
 
     if results:
         console.print("\n[bold green]Summary:[/bold green]")
