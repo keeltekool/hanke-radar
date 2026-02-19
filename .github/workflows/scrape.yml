@@ -30,8 +30,8 @@ jobs:
       - name: Set up Python
         run: uv python install 3.13
 
-      - name: Install dependencies
-        run: uv sync
+      - name: Install project and dependencies
+        run: uv sync --all-groups
 
       - name: Scrape procurements
         env:
@@ -39,7 +39,7 @@ jobs:
         run: |
           BACKFILL="${{ github.event.inputs.backfill_months || '0' }}"
           echo "Scraping with backfill=$BACKFILL months"
-          uv run hanke scrape --backfill "$BACKFILL"
+          uv run python -m hanke_radar.cli.main scrape --backfill "$BACKFILL"
 
       - name: Enrich new procurements
         env:
@@ -47,14 +47,14 @@ jobs:
         run: |
           LIMIT="${{ github.event.inputs.enrich_limit || '100' }}"
           echo "Enriching up to $LIMIT procurements"
-          uv run hanke enrich --limit "$LIMIT"
+          uv run python -m hanke_radar.cli.main enrich --limit "$LIMIT"
 
       - name: Mark expired procurements
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: uv run hanke expire
+        run: uv run python -m hanke_radar.cli.main expire
 
       - name: Show status
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: uv run hanke status
+        run: uv run python -m hanke_radar.cli.main status
