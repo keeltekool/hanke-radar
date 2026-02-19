@@ -59,19 +59,6 @@ async def list_procurements(
     }
 
 
-@router.get("/procurements/{procurement_id}")
-async def get_procurement(
-    procurement_id: int,
-    session: AsyncSession = Depends(get_session),
-):
-    """Get a single procurement by database ID."""
-    result = await session.execute(select(Procurement).where(Procurement.id == procurement_id))
-    row = result.scalar()
-    if row is None:
-        return {"error": "Not found"}, 404
-    return _serialize(row)
-
-
 @router.get("/procurements/stats")
 async def procurement_stats(
     session: AsyncSession = Depends(get_session),
@@ -106,6 +93,19 @@ async def procurement_stats(
         ],
         "by_status": [{"status": s, "count": c} for s, c in status_result.all()],
     }
+
+
+@router.get("/procurements/{procurement_id}")
+async def get_procurement(
+    procurement_id: int,
+    session: AsyncSession = Depends(get_session),
+):
+    """Get a single procurement by database ID."""
+    result = await session.execute(select(Procurement).where(Procurement.id == procurement_id))
+    row = result.scalar()
+    if row is None:
+        return {"error": "Not found"}, 404
+    return _serialize(row)
 
 
 @router.get("/trades")
