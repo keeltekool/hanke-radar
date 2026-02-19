@@ -13,7 +13,7 @@ URIs in the eForms XML bulk dump.
 import asyncio
 import re
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import httpx
 from sqlalchemy import select, update
@@ -155,7 +155,7 @@ async def enrich_active_procurements(
                 try:
                     enrichment = await enrich_procurement(client, proc, verbose)
                     if enrichment:
-                        update_dict = {"enriched_at": datetime.now(timezone.utc)}
+                        update_dict = {"enriched_at": datetime.now(UTC)}
                         for key in ("contact_person", "contact_email", "contact_phone",
                                     "performance_address"):
                             if key in enrichment:
@@ -174,7 +174,7 @@ async def enrich_active_procurements(
                         await session.execute(
                             update(Procurement)
                             .where(Procurement.id == proc.id)
-                            .values(enriched_at=datetime.now(timezone.utc))
+                            .values(enriched_at=datetime.now(UTC))
                         )
                         skipped += 1
                 except Exception as e:

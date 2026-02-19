@@ -1,6 +1,5 @@
 """SQLAlchemy models for procurement data."""
 
-from datetime import datetime
 
 from sqlalchemy import (
     ARRAY,
@@ -9,7 +8,6 @@ from sqlalchemy import (
     DateTime,
     Index,
     Integer,
-    String,
     Text,
     func,
 )

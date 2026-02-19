@@ -113,7 +113,7 @@ def status():
             )
             last = last_run.scalar()
 
-            console.print(f"\n[bold]HankeRadar Database Status[/bold]")
+            console.print("\n[bold]HankeRadar Database Status[/bold]")
             console.print(f"Total procurements: [cyan]{total_count}[/cyan]")
 
             if status_counts:
@@ -133,7 +133,7 @@ def status():
                 console.print(table)
 
             if last:
-                console.print(f"\n[bold]Last Scrape Run[/bold]")
+                console.print("\n[bold]Last Scrape Run[/bold]")
                 console.print(f"  Type: {last.run_type}")
                 console.print(f"  Month: {last.year_month}")
                 console.print(f"  Status: {last.status}")

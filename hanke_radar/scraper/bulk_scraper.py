@@ -1,8 +1,7 @@
 """Bulk XML scraper for riigihanked.riik.ee monthly dumps."""
 
-import asyncio
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import httpx
 from sqlalchemy import select, text
@@ -46,7 +45,10 @@ def _derive_contract_type(cpv_primary: str) -> str:
     prefix = cpv_primary[:2]
     if prefix == "45":
         return "ehitustööd"  # Construction works
-    elif prefix in ("50", "51", "55", "60", "63", "64", "65", "66", "70", "71", "72", "73", "75", "76", "77", "79", "80", "85", "90", "92", "98"):
+    elif prefix in (
+        "50", "51", "55", "60", "63", "64", "65", "66", "70",
+        "71", "72", "73", "75", "76", "77", "79", "80", "85", "90", "92", "98",
+    ):
         return "teenused"  # Services
     else:
         return "tarned"  # Supplies
@@ -145,7 +147,6 @@ async def scrape_month(year: int, month: int, verbose: bool = True) -> dict:
 
             # Upsert into database
             stored = 0
-            skipped = 0
             errors = 0
             for notice in relevant:
                 try:
@@ -164,7 +165,7 @@ async def scrape_month(year: int, month: int, verbose: bool = True) -> dict:
                                 "status": db_dict["status"],
                                 "source_url": db_dict["source_url"],
                                 "trade_tags": db_dict["trade_tags"],
-                                "updated_at": datetime.now(timezone.utc),
+                                "updated_at": datetime.now(UTC),
                             },
                         )
                     )

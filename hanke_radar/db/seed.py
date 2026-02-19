@@ -1,23 +1,28 @@
 """Seed data for trade-CPV mappings."""
 
+
+def _m(prefix: str, key: str, et: str, en: str) -> dict:
+    return {"cpv_prefix": prefix, "trade_key": key, "trade_name_et": et, "trade_name_en": en}
+
+
 # Confirmed CPV prefixes from real riigihanked.riik.ee notices
 TRADE_CPV_SEEDS = [
     # Plumbing
-    {"cpv_prefix": "4533", "trade_key": "plumbing", "trade_name_et": "Torustik", "trade_name_en": "Plumbing"},
-    {"cpv_prefix": "45332", "trade_key": "plumbing", "trade_name_et": "Torustik", "trade_name_en": "Plumbing"},
+    _m("4533", "plumbing", "Torustik", "Plumbing"),
+    _m("45332", "plumbing", "Torustik", "Plumbing"),
     # Electrical
-    {"cpv_prefix": "4531", "trade_key": "electrical", "trade_name_et": "Elekter", "trade_name_en": "Electrical"},
+    _m("4531", "electrical", "Elekter", "Electrical"),
     # Painting
-    {"cpv_prefix": "4544", "trade_key": "painting", "trade_name_et": "Maalimine", "trade_name_en": "Painting"},
-    {"cpv_prefix": "45442", "trade_key": "painting", "trade_name_et": "Maalimine", "trade_name_en": "Painting"},
+    _m("4544", "painting", "Maalimine", "Painting"),
+    _m("45442", "painting", "Maalimine", "Painting"),
     # HVAC
-    {"cpv_prefix": "45331", "trade_key": "hvac", "trade_name_et": "Küte ja ventilatsioon", "trade_name_en": "HVAC"},
+    _m("45331", "hvac", "Küte ja ventilatsioon", "HVAC"),
     # General construction / finishing
-    {"cpv_prefix": "4540", "trade_key": "general", "trade_name_et": "Ehitustööd", "trade_name_en": "Construction"},
-    {"cpv_prefix": "4543", "trade_key": "general", "trade_name_et": "Ehitustööd", "trade_name_en": "Construction"},
-    {"cpv_prefix": "4545", "trade_key": "general", "trade_name_et": "Ehitustööd", "trade_name_en": "Construction"},
-    {"cpv_prefix": "4521", "trade_key": "general", "trade_name_et": "Ehitustööd", "trade_name_en": "Construction"},
+    _m("4540", "general", "Ehitustööd", "Construction"),
+    _m("4543", "general", "Ehitustööd", "Construction"),
+    _m("4545", "general", "Ehitustööd", "Construction"),
+    _m("4521", "general", "Ehitustööd", "Construction"),
     # Maintenance / repair
-    {"cpv_prefix": "5070", "trade_key": "maintenance", "trade_name_et": "Hooldus", "trade_name_en": "Maintenance"},
-    {"cpv_prefix": "5071", "trade_key": "maintenance", "trade_name_et": "Hooldus", "trade_name_en": "Maintenance"},
+    _m("5070", "maintenance", "Hooldus", "Maintenance"),
+    _m("5071", "maintenance", "Hooldus", "Maintenance"),
 ]
