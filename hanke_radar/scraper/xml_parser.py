@@ -4,6 +4,7 @@ XML format: eForms UBL (EU standard)
 Root: <OPEN-DATA> containing <ContractNotice> elements
 """
 
+import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
@@ -30,6 +31,7 @@ class ParsedProcurement:
 
     notice_id: str = ""
     procurement_id: str = ""
+    rhr_id: str = ""  # Internal RHR integer ID (from CallForTendersDocumentReference URI)
     title: str = ""
     description: str = ""
     contracting_auth: str = ""
@@ -157,8 +159,23 @@ def parse_notice(notice_el: etree._Element) -> ParsedProcurement:
         except ValueError:
             pass
 
-    # Source URL
-    if p.procurement_id:
+    # RHR internal ID — extracted from CallForTendersDocumentReference URI
+    # URI format: https://riigihanked.riik.ee/rhr-web/#/procurement/{rhr_id}/documents?group=B
+    doc_uri_el = notice_el.find(
+        ".//cac:CallForTendersDocumentReference//cbc:URI", NS
+    )
+    if doc_uri_el is not None:
+        uri_text = _text(doc_uri_el)
+        rhr_match = re.search(r"/procurement/(\d+)/", uri_text)
+        if rhr_match:
+            p.rhr_id = rhr_match.group(1)
+
+    # Source URL — prefer RHR integer ID for a working link
+    if p.rhr_id:
+        p.source_url = (
+            f"https://riigihanked.riik.ee/rhr-web/#/procurement/{p.rhr_id}/general-info"
+        )
+    elif p.procurement_id:
         p.source_url = (
             f"https://riigihanked.riik.ee/rhr-web/#/procurement/{p.procurement_id}/general-info"
         )

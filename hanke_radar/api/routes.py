@@ -169,4 +169,8 @@ def _serialize(p: Procurement) -> dict:
         "status": p.status,
         "source_url": p.source_url,
         "trade_tags": p.trade_tags,
+        "contact_person": p.contact_person,
+        "contact_email": p.contact_email,
+        "contact_phone": p.contact_phone,
+        "performance_address": p.performance_address,
     }

@@ -1,6 +1,5 @@
 """Database engine and session management."""
 
-import ssl
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine

@@ -26,6 +26,7 @@ class Procurement(Base):
     id = Column(Integer, primary_key=True)
     notice_id = Column(Text, nullable=False, unique=True)
     procurement_id = Column(Text)
+    rhr_id = Column(Text)  # Internal RHR integer ID for API enrichment
     title = Column(Text, nullable=False)
     description = Column(Text)
     contracting_auth = Column(Text, nullable=False)
@@ -44,6 +45,11 @@ class Procurement(Base):
     source_url = Column(Text)
     raw_html = Column(Text)
     trade_tags = Column(ARRAY(Text), default=list)
+    contact_person = Column(Text)
+    contact_email = Column(Text)
+    contact_phone = Column(Text)
+    performance_address = Column(Text)
+    enriched_at = Column(DateTime(timezone=True))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 

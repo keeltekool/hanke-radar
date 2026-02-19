@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: hanke-radar
+    runtime: docker
+    repo: https://github.com/keeltekool/hanke-radar
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        sync: false  # Set manually in Render dashboard

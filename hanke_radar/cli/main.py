@@ -145,6 +145,27 @@ def status():
 
 
 @app.command()
+def enrich(
+    limit: int = typer.Option(50, help="Max procurements to enrich per run"),
+):
+    """Enrich active procurements with contact info from RHR API."""
+    from hanke_radar.scraper.html_enricher import enrich_active_procurements
+
+    console.print(f"[bold]Enriching up to {limit} procurements...[/bold]")
+    summary = asyncio.run(enrich_active_procurements(limit=limit))
+
+    table = Table(title="Enrichment Summary")
+    table.add_column("Metric")
+    table.add_column("Count", justify="right")
+    table.add_row("Total checked", str(summary["total"]))
+    table.add_row("Enriched", str(summary["enriched"]))
+    table.add_row("Skipped", str(summary["skipped"]))
+    table.add_row("Errors", str(summary["errors"]))
+    table.add_row("Duration", f"{summary['duration_ms']}ms")
+    console.print(table)
+
+
+@app.command()
 def serve(
     host: str = typer.Option("0.0.0.0", help="Host to bind to"),
     port: int = typer.Option(8000, help="Port to listen on"),

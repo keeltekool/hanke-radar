@@ -71,6 +71,7 @@ def _to_db_dict(p: ParsedProcurement) -> dict:
     return {
         "notice_id": p.notice_id,
         "procurement_id": p.procurement_id,
+        "rhr_id": p.rhr_id,
         "title": p.title,
         "description": p.description,
         "contracting_auth": p.contracting_auth,
@@ -155,11 +156,13 @@ async def scrape_month(year: int, month: int, verbose: bool = True) -> dict:
                         .on_conflict_do_update(
                             index_elements=["notice_id"],
                             set_={
+                                "rhr_id": db_dict["rhr_id"],
                                 "title": db_dict["title"],
                                 "description": db_dict["description"],
                                 "estimated_value": db_dict["estimated_value"],
                                 "submission_deadline": db_dict["submission_deadline"],
                                 "status": db_dict["status"],
+                                "source_url": db_dict["source_url"],
                                 "trade_tags": db_dict["trade_tags"],
                                 "updated_at": datetime.now(timezone.utc),
                             },

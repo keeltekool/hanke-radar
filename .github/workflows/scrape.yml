@@ -1,0 +1,45 @@
+name: Daily Procurement Scrape
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Daily at 06:00 UTC (09:00 EET)
+  workflow_dispatch:       # Manual trigger from GitHub UI
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.9.x"
+
+      - name: Set up Python
+        run: uv python install 3.13
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Scrape current month
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: uv run hanke scrape
+
+      - name: Enrich new procurements
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: uv run hanke enrich --limit 100
+
+      - name: Mark expired procurements
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: uv run hanke expire
+
+      - name: Show status
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: uv run hanke status
