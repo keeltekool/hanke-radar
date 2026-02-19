@@ -55,14 +55,18 @@ def _derive_contract_type(cpv_primary: str) -> str:
 
 
 async def _ensure_trade_mappings(session: AsyncSession) -> None:
-    """Seed trade_cpv_mappings table if empty."""
-    result = await session.execute(select(TradeCpvMapping.id).limit(1))
-    if result.scalar() is not None:
-        return
+    """Sync trade_cpv_mappings table with seed data (adds new prefixes on each run)."""
+    existing = await session.execute(select(TradeCpvMapping.cpv_prefix))
+    existing_prefixes = {row[0] for row in existing.all()}
 
+    added = 0
     for seed in TRADE_CPV_SEEDS:
-        session.add(TradeCpvMapping(**seed))
-    await session.commit()
+        if seed["cpv_prefix"] not in existing_prefixes:
+            session.add(TradeCpvMapping(**seed))
+            added += 1
+
+    if added:
+        await session.commit()
 
 
 def _to_db_dict(p: ParsedProcurement) -> dict:

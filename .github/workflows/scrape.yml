@@ -4,11 +4,20 @@ on:
   schedule:
     - cron: '0 6 * * *'  # Daily at 06:00 UTC (09:00 EET)
   workflow_dispatch:       # Manual trigger from GitHub UI
+    inputs:
+      backfill_months:
+        description: 'Number of months to backfill (0 = current month only)'
+        required: false
+        default: '0'
+      enrich_limit:
+        description: 'Max procurements to enrich'
+        required: false
+        default: '100'
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
@@ -24,15 +33,21 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
-      - name: Scrape current month
+      - name: Scrape procurements
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: uv run hanke scrape
+        run: |
+          BACKFILL="${{ github.event.inputs.backfill_months || '0' }}"
+          echo "Scraping with backfill=$BACKFILL months"
+          uv run hanke scrape --backfill "$BACKFILL"
 
       - name: Enrich new procurements
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: uv run hanke enrich --limit 100
+        run: |
+          LIMIT="${{ github.event.inputs.enrich_limit || '100' }}"
+          echo "Enriching up to $LIMIT procurements"
+          uv run hanke enrich --limit "$LIMIT"
 
       - name: Mark expired procurements
         env:

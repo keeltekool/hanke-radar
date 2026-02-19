@@ -20,9 +20,20 @@ NS = {
     "ext": "urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2",
 }
 
-# eForms notice subtypes that represent active tenders
-# 16 = Contract notice (works), 17 = Contract notice (services/supplies)
-ACTIVE_TENDER_SUBTYPES = {"16", "17"}
+# eForms notice subtypes that represent active/biddable tenders.
+# Broad set: all ContractNotice subtypes where someone can submit a bid.
+# 7-9: Below/at EU threshold contract notices
+# 10-13: Light regime, design contests, PIN CfC
+# 16: Contract notice - works (above EU threshold)
+# 17: Contract notice - supplies/services (above EU threshold)
+# 18: Contract notice - utilities sector
+# 19: Contract notice - concessions
+# 20: Contract notice - defence
+ACTIVE_TENDER_SUBTYPES = {
+    "2", "4",                               # PIN call-for-competition
+    "7", "8", "9", "10", "11", "12", "13",  # Below/at threshold, light regime
+    "16", "17", "18", "19", "20",           # Above threshold, utilities, defence
+}
 
 
 @dataclass
@@ -193,9 +204,12 @@ def parse_bulk_xml(xml_content: bytes) -> list[ParsedProcurement]:
     root = etree.fromstring(xml_content)
     results = []
 
+    # Parse ContractNotice and PriorInformationNotice elements.
+    # PriorInformationNotice subtypes 2,4 are "call for competition" — biddable.
+    PARSEABLE_TAGS = {"ContractNotice", "PriorInformationNotice"}
     for child in root:
         tag = child.tag.split("}")[-1] if "}" in child.tag else child.tag
-        if tag == "ContractNotice":
+        if tag in PARSEABLE_TAGS:
             parsed = parse_notice(child)
             if parsed.notice_id:
                 results.append(parsed)
@@ -204,5 +218,9 @@ def parse_bulk_xml(xml_content: bytes) -> list[ParsedProcurement]:
 
 
 def is_active_tender(procurement: ParsedProcurement) -> bool:
-    """Check if a procurement is an active tender (not a result/modification)."""
+    """Check if a procurement is an active/biddable tender.
+
+    Accepts all ContractNotice subtypes and PriorInformationNotice
+    call-for-competition subtypes (2, 4).
+    """
     return procurement.notice_subtype in ACTIVE_TENDER_SUBTYPES

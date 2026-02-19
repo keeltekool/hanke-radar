@@ -113,18 +113,30 @@ def test_parse_deadline():
 
 
 def test_is_active_tender():
-    p = ParsedProcurement(notice_subtype="16")
-    assert is_active_tender(p) is True
+    # Above-threshold contract notices
+    assert is_active_tender(ParsedProcurement(notice_subtype="16")) is True
+    assert is_active_tender(ParsedProcurement(notice_subtype="17")) is True
 
-    p2 = ParsedProcurement(notice_subtype="17")
-    assert is_active_tender(p2) is True
+    # Below-threshold and light regime
+    assert is_active_tender(ParsedProcurement(notice_subtype="7")) is True
+    assert is_active_tender(ParsedProcurement(notice_subtype="10")) is True
+
+    # Utilities and defence
+    assert is_active_tender(ParsedProcurement(notice_subtype="18")) is True
+    assert is_active_tender(ParsedProcurement(notice_subtype="20")) is True
+
+    # PIN call-for-competition
+    assert is_active_tender(ParsedProcurement(notice_subtype="2")) is True
+    assert is_active_tender(ParsedProcurement(notice_subtype="4")) is True
 
 
 def test_is_not_active_tender():
-    # Result notice
-    p = ParsedProcurement(notice_subtype="29")
-    assert is_active_tender(p) is False
+    # Result/award notice
+    assert is_active_tender(ParsedProcurement(notice_subtype="29")) is False
+    assert is_active_tender(ParsedProcurement(notice_subtype="25")) is False
+
+    # Planning notice (not CfC)
+    assert is_active_tender(ParsedProcurement(notice_subtype="1")) is False
 
     # Empty
-    p2 = ParsedProcurement(notice_subtype="")
-    assert is_active_tender(p2) is False
+    assert is_active_tender(ParsedProcurement(notice_subtype="")) is False
